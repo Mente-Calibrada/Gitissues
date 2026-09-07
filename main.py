@@ -1,45 +1,61 @@
 # ==============================================================================
 # |                                                                            |
-# |   GGGGGG IIII TTTTTT IIII  SSSSS  SSSSS  UU  UU EEEEEE  SSSSS              |
-# |   GG  GG II   TT   II   SS     SS      UU  UU EE     SS                  |
-# |   GG     II   TT   II    SSSS   SSSS   UU  UU EEEE    SSSS               |
-# |   GG GGG II   TT   II       SS     SS  UU  UU EEEEE      SS              |
-# |   GG  GG II   TT   II   SS  SS SS  SS  UU  UU EE     SS  SS              |
-# |   GGGGGG IIII TT   IIII  SSSSS  SSSSS  UUUUU EEEEEE  SSSSS              |
+# |  GGGGGG  IIII TTTTTT  IIII  SSSSS   SSSSS  UU   UU EEEEEE   SSSSS  |
+# | GG    GG  II    TT     II  SS   SS SS   SS UU   UU EE      SS   SS |
+# | GG        II    TT     II  SS      SS      UU   UU EEEE     SS      |
+# | GG   GGG  II    TT     II   SSSSS   SSSSS  UU   UU EEEEE     SSSSS  |
+# | GG    GG  II    TT     II       SS      SS UU   UU EE            SS |
+# |  GGGGGG  IIII   TT    IIII  SSSSS   SSSSS   UUUUU  EEEEEE  SSSSS  |
 # |                                                                            |
-# ==============================================================================
+# |============================================================================|
 # |                                                                            |
-# | Topological Recursive Engine - Gitissues (v1.0.0 - A P E X )               |
+# |  Topological Recursive Engine - Gitissues (v1.0.0 - A P E X )              |
 # |                                                                            |
-# | Sovereign Creator: Jean Laris                                              |
-# | Holding: Alantec - Architects of the Future                                |
-# | Purpose: Attraction Basin Engineering & Extreme Morphological Synthesis    |
-# | GitHub HQ: https://github.com/Calibrated-Mind/Gitissues                    |
+# |  Sovereign Creator: Jean Laris                                             |
+# |  Holding: Alantec - Architects of the Future                               |
+# |  Purpose: Attraction Basin Engineering & Extreme Morphological Synthesis   |
+# |  GitHub HQ: https://github.com/Calibrated-Mind/Gitissues                   |
 # |                                                                            |
-# ==============================================================================
+# |============================================================================|
+# |                                                                            |
+# |  [ MIT License - Open Source Sovereignty Artifact ]                        |
+# |                                                                            |
+# |============================================================================|
 
-"""
-Gitissues
-Main engine for bounded topological attraction basins and state tracking.
-Open-source sovereign logic artifact designed for extreme morphological synthesis.
-"""
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field
 
-def sovereign_topologic_basin(n: int, steps: int = 10) -> list[int]:
+app = FastAPI(title="Gitissues Topological Engine", version="1.0.0")
+
+class BasinRequest(BaseModel):
+    initial_state: int = Field(..., ge=0, description="Initial non-negative integer state.")
+    steps: int = Field(10, description="Maximum execution steps.")
+
+@app.post("/basin/compute", response_model=list[int])
+def compute_sovereign_basin(payload: BasinRequest):
     """
     Computes state transition trajectories through a bounded sovereign topological basin.
-    Maps discrete numeric progression into closed finite attractors under calibrated oversight.
     """
-    history = [n]
+    n = payload.initial_state
+    trajectory = [n]
+    seen_states = {n}
     current = n
-    for _ in range(steps):
-        square = current ** 2
-        current = sum(int(digit) for digit in str(square))
-        history.append(current)
-    return history
-
-if __name__ == "__main__":
-    print("Initializing Gitissues.git...")
-    print("Trajectory:", sovereign_topologic_basin(13))
-
+    max_iterations = 1000
+    
+    for _ in range(max_iterations):
+        squared = current * current
+        next_state = sum(int(digit) for digit in str(squared))
+        
+        if next_state in seen_states:
+            trajectory.append(next_state)
+            break
+            
+        trajectory.append(next_state)
+        seen_states.add(next_state)
+        current = next_state
+    else:
+        raise HTTPException(status_code=500, detail="Iteration limit exceeded without convergence.")
+        
+    return trajectory
 
 # Alantec - Architects of the Future
